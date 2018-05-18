@@ -1,0 +1,8 @@
+backend/vendor/*
+hack/.env
+backend/backend
+backend/config/.config.yaml
+backend/cplus/model
+backend/cplus/lib
+backend/cplus/include
+backend/images/*

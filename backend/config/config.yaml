@@ -1,0 +1,18 @@
+app:
+  mode: debug 
+card:
+  database:
+    name: card
+    type: mysql
+    host: mysql.localhost
+    port: 3306
+    user: root
+    target: card
+    password: 123456
+    maxIdle: 10 
+    maxOpen: 5 
+    showSQL: true
+    location: Asia/Shanghai
+  ipc:
+    model: ../cplus/model
+    img: ../images

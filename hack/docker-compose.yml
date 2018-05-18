@@ -1,0 +1,42 @@
+version: '2'
+services:
+  redis:
+    environment:
+      - REDIS_PASSWORD=123456
+    image: redis:3.2
+    container_name: ${PROJECT_NAME}-${DEV_USER}-redis
+    expose:
+      - "6379"
+  mysql:
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    image: mysql:5.6.38
+    container_name: ${PROJECT_NAME}-${DEV_USER}-mysql
+    volumes:
+      - /home/${DEV_USER}/database/mysql:/var/lib/mysql
+    ports:
+      - "${DEV_DB_PORT}:3306"
+    networks:
+      - default
+  backend:
+    environment:
+      - ConfigPath=../config/config.yaml
+    image: golang-bee:1.8
+    container_name: ${PROJECT_NAME}-${DEV_USER}-golang
+    volumes:
+      # 挂载项目代码目录
+      - ../backend:/home/roobo/go_project/src/identify/backend
+    working_dir: /home/roobo/go_project/src/identify/backend/main
+    entrypoint: 
+      - bee 
+      - run 
+    links:
+      - mysql:mysql.localhost
+    ports:
+      - "${DEV_PORT}:8080"
+    networks:
+      - default
+networks:
+  default:
+    external:
+      name: ${DEV_USER}
