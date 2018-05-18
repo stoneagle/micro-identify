@@ -21,7 +21,7 @@ services:
   backend:
     environment:
       - ConfigPath=../config/config.yaml
-    image: golang-bee:1.8
+    image: golang-bee:1.9
     container_name: ${PROJECT_NAME}-${DEV_USER}-golang
     volumes:
       # 挂载项目代码目录

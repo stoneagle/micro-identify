@@ -6,3 +6,4 @@ backend/cplus/model
 backend/cplus/lib
 backend/cplus/include
 backend/images/*
+backend/main/main

@@ -1,4 +1,4 @@
-FROM golang-centos:1.8
+FROM golang-centos:1.9
 
 RUN yum install -y git && \
     go get github.com/beego/bee

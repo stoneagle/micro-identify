@@ -1,5 +1,5 @@
-hash: 107d4f50e5910f1635b81009b8bb75a175989f703439e34dffa5e469871e5eb1
-updated: 2018-05-18T19:36:40.120499516+08:00
+hash: 96f8ba881cc4403f981a44527255550aecc26d6d6a0c138a0949b1d3d71273fd
+updated: 2018-05-18T20:13:51.408948545+08:00
 imports:
 - name: github.com/gin-contrib/sse
   version: 22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae
@@ -35,8 +35,19 @@ imports:
   version: f3cacc17c85ecb7f1b6a9e373ee85d1480919868
   subpackages:
   - codec
+- name: go.uber.org/atomic
+  version: 1ea20fb1cbb1cc08cbd0d913a96dead89aa18289
+- name: go.uber.org/multierr
+  version: 3c4937480c32f4c13a875a1829af76c98ca3d40a
 - name: go.uber.org/zap
   version: eeedf312bc6c57391d84767a4cd413f02a917974
+  subpackages:
+  - atomic
+  - buffer
+  - internal/bufferpool
+  - internal/color
+  - internal/exit
+  - zapcore
 - name: golang.org/x/sys/unix
   version: 7c87d13f8e835d2fb3a70a2912c811ed0c1d241b
 - name: gopkg.in/go-playground/validator.v8

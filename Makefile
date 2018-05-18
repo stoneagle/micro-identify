@@ -17,8 +17,8 @@ rm-web:
 
 build-base:
 	cd hack/dockerfile && \
-	docker build -f ./Dockerfile -t golang-centos:1.8 . && \
-	docker build -f ./Dockerfile.beego -t golang-bee:1.8 .
+	docker build -f ./Dockerfile -t golang-centos:1.9 . && \
+	docker build -f ./Dockerfile.beego -t golang-bee:1.9 .
 
 init-db:
 	go run ./initial/db.go 
