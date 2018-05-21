@@ -11,5 +11,8 @@ func Configure(b *bootstrap.Bootstrapper) {
 	{
 		engine := common.GetEngine(b.Config.Card.Database.Name)
 		cc.NewCard(engine).Router(v1Card)
+		if b.Config.App.Mode == "debug" {
+			cc.NewTest(engine).Router(v1Card)
+		}
 	}
 }

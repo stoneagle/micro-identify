@@ -6,22 +6,22 @@ import (
 	"github.com/go-xorm/xorm"
 )
 
-type Card struct {
+type Message struct {
 	engine *xorm.Engine
 }
 
-func NewCard(engine *xorm.Engine) *Card {
-	return &Card{
+func NewMessage(engine *xorm.Engine) *Message {
+	return &Message{
 		engine: engine,
 	}
 }
 
-func (s *Card) Add(m *models.Card) (err error) {
+func (s *Message) Add(m *models.Message) (err error) {
 	_, err = s.engine.Insert(m)
 	return err
 }
 
-func (s *Card) Del(m *models.Card, hard bool) (err error) {
+func (s *Message) Del(m *models.Message, hard bool) (err error) {
 	if hard {
 		_, err = s.engine.Unscoped().Delete(m)
 	} else {

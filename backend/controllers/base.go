@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"identify/backend/common"
 	"net/http"
 
@@ -32,7 +31,9 @@ func (b *Base) Success(ctx *gin.Context, data interface{}) {
 }
 
 func (b *Base) ErrorBusiness(ctx *gin.Context, code common.ErrorCode, desc string, err error) {
-	fmt.Println("%v\r\n", err.Error())
+	if err != nil {
+		desc += ":" + err.Error()
+	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"code": code,
 		"data": struct{}{},

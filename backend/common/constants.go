@@ -6,7 +6,11 @@ const (
 	ErrorOk     ErrorCode = 0
 	ErrorParams ErrorCode = 1
 	ErrorFiles  ErrorCode = 2
+	ErrorMysql  ErrorCode = 3
+	ErrorRedis  ErrorCode = 4
 	ErrorServer ErrorCode = 500
+
+	ErrorCardIdentify ErrorCode = 1000
 )
 
 type ProjectType int

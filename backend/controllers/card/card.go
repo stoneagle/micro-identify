@@ -4,7 +4,6 @@ import (
 	"identify/backend/common"
 	"identify/backend/controllers"
 	"identify/backend/ipc"
-	svc "identify/backend/services/card"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-xorm/xorm"
@@ -12,24 +11,26 @@ import (
 
 type Card struct {
 	controllers.Base
-	Service *svc.Card
 }
 
 func NewCard(engine *xorm.Engine) *Card {
 	card := &Card{}
 	card.Init()
-	card.Service = svc.NewCard(card.Engine)
 	card.Engine = engine
 	card.Type = common.ProjectCard
 	return card
 }
 
 func (c *Card) Router(router *gin.RouterGroup) {
-	users := router.Group("")
-	users.POST("check", c.Check)
-	users.GET("", c.One)
+	cards := router.Group("")
+	cards.POST("check", c.Check)
+	cards.POST("update/cache", c.UpdateCache)
+	cards.GET("", c.One)
 }
 
+/*
+ * 返回图片识别结果id
+ */
 func (c *Card) Check(ctx *gin.Context) {
 	appId := ctx.PostForm("appId")
 	img, err := ctx.FormFile("img")
@@ -47,14 +48,31 @@ func (c *Card) Check(ctx *gin.Context) {
 	data := ipc.IData{}
 	modelPath := c.Config.Card.Ipc.Model
 	data.SetParams(modelPath, filePath, appId, c.Type)
-	ret := data.Check()
+	imgUniqueId := data.Check()
+	if imgUniqueId <= 0 {
+		c.ErrorBusiness(ctx, common.ErrorCardIdentify, "img can not identify", nil)
+		return
+	}
+	ret := map[string]int{
+		"UniqueId": imgUniqueId,
+	}
 	c.Success(ctx, ret)
 }
 
+/*
+ * 获取card配置
+ */
 func (c *Card) One(ctx *gin.Context) {
-	data := ipc.IData{}
-	modelPath := c.Config.Card.Ipc.Model
-	data.SetParams(modelPath, "", "", c.Type)
-	ret := data.Check()
-	c.Success(ctx, ret)
+	// 判断卡片所属专辑是否发布
+	// 获取卡片配置信息
+	c.Success(ctx, struct{}{})
+}
+
+/*
+ * 更新card相关缓存
+ */
+func (c *Card) UpdateCache(ctx *gin.Context) {
+	// 更新卡片所属专辑发布缓存
+	// 更新卡片配置信息
+	c.Success(ctx, struct{}{})
 }

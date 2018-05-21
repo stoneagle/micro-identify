@@ -6,22 +6,22 @@ import (
 	"github.com/go-xorm/xorm"
 )
 
-type Card struct {
+type Tag struct {
 	engine *xorm.Engine
 }
 
-func NewCard(engine *xorm.Engine) *Card {
-	return &Card{
+func NewTag(engine *xorm.Engine) *Tag {
+	return &Tag{
 		engine: engine,
 	}
 }
 
-func (s *Card) Add(m *models.Card) (err error) {
+func (s *Tag) Add(m *models.Tag) (err error) {
 	_, err = s.engine.Insert(m)
 	return err
 }
 
-func (s *Card) Del(m *models.Card, hard bool) (err error) {
+func (s *Tag) Del(m *models.Tag, hard bool) (err error) {
 	if hard {
 		_, err = s.engine.Unscoped().Delete(m)
 	} else {
