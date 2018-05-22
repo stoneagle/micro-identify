@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	models "identify/backend/models/card"
 
 	"github.com/go-xorm/xorm"
@@ -14,6 +15,17 @@ func NewAlbum(engine *xorm.Engine) *Album {
 	return &Album{
 		engine: engine,
 	}
+}
+
+func (s *Album) Get(a *models.Album) (err error) {
+	has, err := s.engine.Get(a)
+	if err != nil {
+		return err
+	}
+	if !has {
+		err = errors.New("album data not exist")
+	}
+	return err
 }
 
 func (s *Album) Add(a *models.Album) (err error) {

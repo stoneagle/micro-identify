@@ -11,6 +11,7 @@ const (
 	ErrorServer ErrorCode = 500
 
 	ErrorCardIdentify ErrorCode = 1000
+	ErrorCardDetail   ErrorCode = 1001
 )
 
 type ProjectType int

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	models "identify/backend/models/card"
 
 	"github.com/go-xorm/xorm"
@@ -14,6 +15,17 @@ func NewCard(engine *xorm.Engine) *Card {
 	return &Card{
 		engine: engine,
 	}
+}
+
+func (s *Card) GetByUniqueId(uniqueId string) (card models.Card, err error) {
+	has, err := s.engine.Where("unique_id=?", uniqueId).Get(&card)
+	if err != nil {
+		return card, err
+	}
+	if !has {
+		err = errors.New("card data not exist with uniqueId: " + uniqueId)
+	}
+	return card, err
 }
 
 func (s *Card) Add(m *models.Card) (err error) {

@@ -16,6 +16,11 @@ func NewRelease(engine *xorm.Engine) *Release {
 	}
 }
 
+func (s *Release) GetByAlbumId(albumId uint) (releases []models.Release, err error) {
+	err = s.engine.Where("album_id = ?", albumId).Find(&releases)
+	return releases, err
+}
+
 func (s *Release) Add(m *models.Release) (err error) {
 	_, err = s.engine.Insert(m)
 	return err

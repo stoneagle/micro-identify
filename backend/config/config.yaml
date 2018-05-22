@@ -11,7 +11,7 @@ card:
     password: 123456
     maxIdle: 10 
     maxOpen: 5 
-    showSQL: true
+    showsql: True
     location: Asia/Shanghai
   ipc:
     model: ../cplus/model

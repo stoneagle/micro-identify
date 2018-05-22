@@ -8,6 +8,8 @@ type Card struct {
 	Size               uint   `xorm:"default(0) comment('卡片大小，单位KB')" form:"size" json:"size"`
 	Status             int    `xorm:"smallint(4) default(0) comment('卡片状态:0未编辑1已编辑2已下架3已上架')" form:"status" json:"status"`
 	ImgUrl             string `xorm:"varchar(256) notnull comment('图片地址')" form:"imgUrl" json:"imgUrl"  binding:"required"`
+
+	Configs []Config `xorm:"-"`
 }
 
 func (c Card) TableName() string {
