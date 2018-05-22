@@ -10,6 +10,7 @@ type Card struct {
 	ImgUrl             string `xorm:"varchar(256) notnull comment('图片地址')" form:"imgUrl" json:"imgUrl"  binding:"required"`
 
 	Configs []Config `xorm:"-"`
+	Album   `xorm:"extends" json:"-"`
 }
 
 func (c Card) TableName() string {

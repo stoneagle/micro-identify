@@ -1,18 +1,27 @@
 package services
 
 import (
+	"encoding/json"
 	models "identify/backend/models/card"
+	"time"
 
+	"github.com/go-redis/redis"
 	"github.com/go-xorm/xorm"
 )
 
 type Config struct {
 	engine *xorm.Engine
+	cache  *redis.Client
 }
 
-func NewConfig(engine *xorm.Engine) *Config {
+var (
+	configsPrefix = "Card-Unique-Configs-"
+)
+
+func NewConfig(engine *xorm.Engine, cache *redis.Client) *Config {
 	return &Config{
 		engine: engine,
+		cache:  cache,
 	}
 }
 
@@ -58,4 +67,32 @@ func (s *Config) Del(m *models.Config, hard bool) (err error) {
 		_, err = s.engine.Delete(m)
 	}
 	return err
+}
+
+func (s *Config) SetCache(uniqueId string, data []models.Config) (err error) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		return err
+	}
+	key := configsPrefix + uniqueId
+	err = s.cache.Set(key, string(b), 60*60*time.Second).Err()
+	return err
+}
+
+func (s *Config) GetCache(uniqueId string) (configs []models.Config, err error) {
+	key := configsPrefix + uniqueId
+	val, err := s.cache.Get(key).Result()
+	if err == redis.Nil {
+		return configs, nil
+	} else if err != nil {
+		return
+	}
+	err = json.Unmarshal([]byte(val), &configs)
+	return
+}
+
+func (s *Config) DelCache(uniqueId string) (err error) {
+	key := configsPrefix + uniqueId
+	_, err = s.cache.Del(key).Result()
+	return
 }

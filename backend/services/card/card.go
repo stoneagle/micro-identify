@@ -4,28 +4,33 @@ import (
 	"errors"
 	models "identify/backend/models/card"
 
+	"github.com/go-redis/redis"
 	"github.com/go-xorm/xorm"
 )
 
 type Card struct {
 	engine *xorm.Engine
+	cache  *redis.Client
 }
 
-func NewCard(engine *xorm.Engine) *Card {
+func NewCard(engine *xorm.Engine, cache *redis.Client) *Card {
 	return &Card{
 		engine: engine,
+		cache:  cache,
 	}
 }
 
 func (s *Card) GetByUniqueId(uniqueId string) (card models.Card, err error) {
-	has, err := s.engine.Where("unique_id=?", uniqueId).Get(&card)
+	cardSlice := make([]models.Card, 0)
+	err = s.engine.Join("LEFT", "album", "album.id = card.album_id").Where("card.unique_id = ?", uniqueId).Find(&cardSlice)
 	if err != nil {
 		return card, err
 	}
-	if !has {
+	if len(cardSlice) == 0 {
 		err = errors.New("card data not exist with uniqueId: " + uniqueId)
+		return
 	}
-	return card, err
+	return cardSlice[0], nil
 }
 
 func (s *Card) Add(m *models.Card) (err error) {

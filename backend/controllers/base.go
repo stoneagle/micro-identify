@@ -5,17 +5,27 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis"
 	"github.com/go-xorm/xorm"
 )
 
 type Base struct {
 	Config common.Conf
-	Engine *xorm.Engine
 	Type   common.ProjectType
+	Engine *xorm.Engine
+	Cache  *redis.Client
 }
 
-func (b *Base) Init() {
+func (b *Base) Prepare(ptype common.ProjectType) {
 	b.Config = *common.GetConfig()
+	b.Cache = common.GetRedis()
+	b.Type = ptype
+	switch b.Type {
+	case common.ProjectCard:
+		b.Engine = common.GetEngine(b.Config.Card.Database.Name)
+	default:
+		panic("project type relate database engine not exist")
+	}
 }
 
 func (b *Base) Redirect(ctx *gin.Context, uri string) {

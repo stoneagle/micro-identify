@@ -13,6 +13,9 @@ import (
 func Configure(b *bootstrap.Bootstrapper) {
 	cardDB := b.Config.Card.Database
 	setProjectEngine(cardDB)
+
+	redisConf := b.Config.Card.Redis
+	common.SetRedis(redisConf.Host, redisConf.Port, redisConf.Password, redisConf.Db)
 }
 
 func setProjectEngine(dbConfig common.DBConf) {

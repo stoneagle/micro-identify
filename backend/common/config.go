@@ -7,6 +7,14 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+type RedisConf struct {
+	Name     string
+	Host     string
+	Port     string
+	Password string
+	Db       int
+}
+
 type DBConf struct {
 	Name     string
 	Type     string
@@ -27,6 +35,7 @@ type Conf struct {
 		Mode string
 	}
 	Card struct {
+		Redis    RedisConf
 		Database DBConf
 		Ipc      struct {
 			Model string

@@ -4,14 +4,16 @@ import (
 	"errors"
 	models "identify/backend/models/card"
 
+	"github.com/go-redis/redis"
 	"github.com/go-xorm/xorm"
 )
 
 type Album struct {
 	engine *xorm.Engine
+	cache  *redis.Client
 }
 
-func NewAlbum(engine *xorm.Engine) *Album {
+func NewAlbum(engine *xorm.Engine, cache *redis.Client) *Album {
 	return &Album{
 		engine: engine,
 	}

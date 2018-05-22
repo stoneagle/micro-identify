@@ -7,18 +7,15 @@ import (
 	services "identify/backend/services/card"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-xorm/xorm"
 )
 
 type Test struct {
 	controllers.Base
 }
 
-func NewTest(engine *xorm.Engine) *Test {
+func NewTest() *Test {
 	test := &Test{}
-	test.Init()
-	test.Engine = engine
-	test.Type = common.ProjectCard
+	test.Prepare(common.ProjectCard)
 	return test
 }
 
@@ -46,7 +43,7 @@ func (c *Test) AlbumAdd(ctx *gin.Context) {
 		return
 	}
 
-	svc := services.NewAlbum(c.Engine)
+	svc := services.NewAlbum(c.Engine, c.Cache)
 	err = svc.Add(&album)
 	if err != nil {
 		c.ErrorBusiness(ctx, common.ErrorMysql, "album save failed", err)
@@ -64,7 +61,7 @@ func (c *Test) AlbumDel(ctx *gin.Context) {
 		return
 	}
 
-	svc := services.NewAlbum(c.Engine)
+	svc := services.NewAlbum(c.Engine, c.Cache)
 	err = svc.Del(&album, true)
 	if err != nil {
 		c.ErrorBusiness(ctx, common.ErrorMysql, "album delete failed", err)
@@ -82,7 +79,7 @@ func (c *Test) ReleaseAdd(ctx *gin.Context) {
 		return
 	}
 
-	svc := services.NewRelease(c.Engine)
+	svc := services.NewRelease(c.Engine, c.Cache)
 	err = svc.Add(&release)
 	if err != nil {
 		c.ErrorBusiness(ctx, common.ErrorMysql, "release save failed", err)
@@ -100,7 +97,7 @@ func (c *Test) ReleaseDel(ctx *gin.Context) {
 		return
 	}
 
-	svc := services.NewRelease(c.Engine)
+	svc := services.NewRelease(c.Engine, c.Cache)
 	err = svc.Del(&release, true)
 	if err != nil {
 		c.ErrorBusiness(ctx, common.ErrorMysql, "release delete failed", err)
@@ -118,7 +115,7 @@ func (c *Test) CardAdd(ctx *gin.Context) {
 		return
 	}
 
-	svc := services.NewCard(c.Engine)
+	svc := services.NewCard(c.Engine, c.Cache)
 	err = svc.Add(&card)
 	if err != nil {
 		c.ErrorBusiness(ctx, common.ErrorMysql, "card save failed", err)
@@ -136,7 +133,7 @@ func (c *Test) CardDel(ctx *gin.Context) {
 		return
 	}
 
-	svc := services.NewCard(c.Engine)
+	svc := services.NewCard(c.Engine, c.Cache)
 	err = svc.Del(&card, true)
 	if err != nil {
 		c.ErrorBusiness(ctx, common.ErrorMysql, "card delete failed", err)
@@ -190,7 +187,7 @@ func (c *Test) ConfigAdd(ctx *gin.Context) {
 		return
 	}
 
-	svc := services.NewConfig(c.Engine)
+	svc := services.NewConfig(c.Engine, c.Cache)
 	err = svc.Add(&config)
 	if err != nil {
 		c.ErrorBusiness(ctx, common.ErrorMysql, "config save failed", err)
@@ -208,7 +205,7 @@ func (c *Test) ConfigDel(ctx *gin.Context) {
 		return
 	}
 
-	svc := services.NewConfig(c.Engine)
+	svc := services.NewConfig(c.Engine, c.Cache)
 	err = svc.Del(&config, true)
 	if err != nil {
 		c.ErrorBusiness(ctx, common.ErrorMysql, "config delete failed", err)
