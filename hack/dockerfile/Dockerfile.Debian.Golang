@@ -1,0 +1,20 @@
+FROM centos:thrift
+
+ARG GOV 
+ARG OWNER 
+
+# 安装go组件
+RUN cd /tmp && \
+    wget "https://mirrors.nju.edu.cn/golang/go${GOV}.linux-amd64.tar.gz" && \
+    tar -zxvf ./go${GOV}.linux-amd64.tar.gz && \
+    mkdir /home/${OWNER} && cp -r ./go /home/${OWNER}/go && \
+    mkdir /home/${OWNER}/go/gopkg && \
+    rm -rf ./go && \
+    rm ./go${GOV}.linux-amd64.tar.gz
+
+# 配置golang环境变量
+ENV GOROOT /home/${OWNER}/go
+ENV GOPATH $GOROOT/gopkg:/home/${OWNER}/go_project
+ENV PATH $PATH:$GOROOT/bin:$GOROOT/gopkg/bin:/home/${OWNER}/go_project/bin
+
+RUN go get github.com/beego/bee

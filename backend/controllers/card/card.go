@@ -3,7 +3,7 @@ package card
 import (
 	"identify/backend/common"
 	"identify/backend/controllers"
-	"identify/backend/ipc"
+	"identify/backend/rpc"
 	services "identify/backend/services/card"
 
 	"github.com/gin-gonic/gin"
@@ -11,11 +11,16 @@ import (
 
 type Card struct {
 	controllers.Base
+	RpcClient rpc.Image
 }
 
 func NewCard() *Card {
 	card := &Card{}
 	card.Prepare(common.ProjectCard)
+	card.RpcClient = rpc.Image{
+		Host: card.Config.Card.Rpc.Host,
+		Port: card.Config.Card.Rpc.Port,
+	}
 	return card
 }
 
@@ -37,19 +42,21 @@ func (c *Card) Check(ctx *gin.Context) {
 		c.ErrorBusiness(ctx, common.ErrorParams, "img file upload failed", err)
 		return
 	}
-	filePath := ipc.GetImagePath(c.Config.Card.Ipc.Img, c.Type) + img.Filename
+	filePath := common.GetImagePath(c.Config.Card.Rpc.Img, c.Type) + img.Filename
 	err = ctx.SaveUploadedFile(img, filePath)
 	if err != nil {
 		c.ErrorBusiness(ctx, common.ErrorFiles, "img file save failed", err)
 		return
 	}
 
-	data := ipc.IData{}
-	modelPath := c.Config.Card.Ipc.Model
-	data.SetParams(modelPath, filePath, appId, c.Type)
-	imgUniqueId := data.Check()
-	if imgUniqueId <= 0 {
-		c.ErrorBusiness(ctx, common.ErrorCardIdentify, "img can not identify", nil)
+	// cgo调用方式
+	// data := ipc.IData{}
+	// modelPath := c.Config.Card.Ipc.Model
+	// data.SetParams(modelPath, filePath, appId, c.Type)
+	// imgUniqueId := data.Check()
+	imgUniqueId, err := c.RpcClient.Identify(appId, filePath, c.Type)
+	if imgUniqueId <= 0 || err != nil {
+		c.ErrorBusiness(ctx, common.ErrorCardIdentify, "img can not identify", err)
 		return
 	}
 	ret := map[string]int{

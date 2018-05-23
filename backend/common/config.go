@@ -38,8 +38,12 @@ type Conf struct {
 		Redis    RedisConf
 		Database DBConf
 		Ipc      struct {
-			Model string
-			Img   string
+			Img string
+		}
+		Rpc struct {
+			Img  string
+			Host string
+			Port string
 		}
 	}
 }
@@ -64,4 +68,8 @@ func GetConfig() *Conf {
 		onceConfig = config
 	}
 	return onceConfig
+}
+
+func GetImagePath(imgPath string, t ProjectType) string {
+	return imgPath + "/" + projectTypeMap[t] + "/"
 }

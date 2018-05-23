@@ -19,3 +19,9 @@ type ProjectType int
 const (
 	ProjectCard ProjectType = iota
 )
+
+var (
+	projectTypeMap = map[ProjectType]string{
+		ProjectCard: "card",
+	}
+)

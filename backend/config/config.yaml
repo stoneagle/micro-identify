@@ -10,7 +10,7 @@ card:
   database:
     name: card
     type: mysql
-    host: mysql.localhost
+    host: mysql
     port: 3306
     user: root
     target: card
@@ -20,5 +20,8 @@ card:
     showsql: True
     location: Asia/Shanghai
   ipc:
-    model: ../cplus/model
+    img: ../images
+  rpc:
+    host: thrift 
+    port: 9090 
     img: ../images

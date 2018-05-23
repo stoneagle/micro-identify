@@ -3,13 +3,13 @@ package ipc
 import (
 	"identify/backend/bootstrap"
 	"identify/backend/common"
-	identify "identify/backend/ipc"
 	"os"
 )
 
 func Configure(b *bootstrap.Bootstrapper) {
-	identify.Register(identify.CardCallBack, common.ProjectCard)
-	cardPath := identify.GetImagePath(b.Config.Card.Ipc.Img, common.ProjectCard)
+	// 放弃cgo调用方案
+	// identify.Register(identify.CardCallBack, common.ProjectCard)
+	cardPath := common.GetImagePath(b.Config.Card.Rpc.Img, common.ProjectCard)
 	checkAndCreateDir(cardPath)
 }
 

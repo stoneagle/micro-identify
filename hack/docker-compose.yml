@@ -1,5 +1,23 @@
 version: '2'
 services:
+  thrift:
+    image: thrift:0.11.0-cpp
+    container_name: ${PROJECT_NAME}-${DEV_USER}-thrift
+    volumes:
+      # 挂载项目代码目录
+      - ../thrift:/home/roobo/thrift
+      - ../images:/home/roobo/images
+      - ../build/include:/home/roobo/thrift/include
+      - ../build/lib:/home/roobo/thrift/lib
+      - ../build/model:/home/roobo/thrift/model
+      - ../Makefile:/home/roobo/Makefile
+    working_dir: /home/roobo/thrift
+    entrypoint: 
+      - ./server 
+    expose:
+      - "9090"
+    networks:
+      - default
   redis:
     # environment:
     #   - REDIS_PASSWORD=123456
@@ -21,11 +39,13 @@ services:
   backend:
     environment:
       - ConfigPath=../config/config.yaml
-    image: golang-bee:1.9
+    # image: golang-bee:1.9
+    image: centos:golang-1.10 
     container_name: ${PROJECT_NAME}-${DEV_USER}-golang
     volumes:
       # 挂载项目代码目录
       - ../backend:/home/roobo/go_project/src/identify/backend
+      - ../images:/home/roobo/go_project/src/identify/backend/images
     working_dir: /home/roobo/go_project/src/identify/backend/main
     entrypoint: 
       - bee 
