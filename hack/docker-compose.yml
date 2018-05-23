@@ -5,12 +5,11 @@ services:
     container_name: ${PROJECT_NAME}-${DEV_USER}-thrift
     volumes:
       # 挂载项目代码目录
-      - ../thrift:/home/roobo/thrift
+      - ../release/server:/home/roobo/thrift/server
       - ../images:/home/roobo/images
       - ../build/include:/home/roobo/thrift/include
       - ../build/lib:/home/roobo/thrift/lib
       - ../build/model:/home/roobo/thrift/model
-      - ../Makefile:/home/roobo/Makefile
     working_dir: /home/roobo/thrift
     entrypoint: 
       - ./server 

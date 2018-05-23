@@ -49,11 +49,6 @@ func (c *Card) Check(ctx *gin.Context) {
 		return
 	}
 
-	// cgo调用方式
-	// data := ipc.IData{}
-	// modelPath := c.Config.Card.Ipc.Model
-	// data.SetParams(modelPath, filePath, appId, c.Type)
-	// imgUniqueId := data.Check()
 	imgUniqueId, err := c.RpcClient.Identify(appId, filePath, c.Type)
 	if imgUniqueId <= 0 || err != nil {
 		c.ErrorBusiness(ctx, common.ErrorCardIdentify, "img can not identify", err)
