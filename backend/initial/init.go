@@ -27,7 +27,7 @@ func main() {
 	initCard(cardConfig)
 }
 
-func initCard(dbConfig config.DBConf) {
+func initCard(dbConfig common.DBConf) {
 	source := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True", dbConfig.User, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Target)
 
 	engine, err := xorm.NewEngine(dbConfig.Type, source)

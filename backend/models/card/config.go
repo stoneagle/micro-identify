@@ -6,7 +6,7 @@ type Config struct {
 	CardId             uint      `xorm:"not null comment('所属卡片id') unique" form:"cardId" json:"cardId" binding:"required"`
 	Metadata           string    `xorm:"TEXT comment('扩展配置')" form:"metadata" json:"metadata"`
 	Messages           []Message `xorm:"-"`
-	Message            Message   `xorm:"extends" json:"-"`
+	Message            Message   `xorm:"- extends" json:"-"`
 }
 
 func (c Config) TableName() string {

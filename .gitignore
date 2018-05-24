@@ -3,7 +3,6 @@ hack/.env
 backend/backend
 backend/cplus/ipc.o
 backend/config/.config.yaml
-backend/main/main
 images/*
 release/
 

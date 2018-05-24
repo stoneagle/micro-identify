@@ -4,29 +4,66 @@ PWD := $(shell pwd)
 USER := $(shell id -u)
 GROUP := $(shell id -g)
 USERNAME := $(shell id -u -n)
-PROJECT := card
+PROJECT := identify
 GOVERSION = 1.10
+DEVELOP_PREFIX =
+IMG_PREFIX =
+IDENTIFY_GIT_TAG =
 
-run-web: 
-	cd hack && docker-compose -p "$(PROJECT)-web-$(USER)" up
+run-web: rm-web-ol 
+	cd hack && docker-compose -p "$(PROJECT)-web-$(USERNAME)" up
 stop-web: 
-	cd hack && docker-compose -p "$(PROJECT)-web-$(USER)" stop 
+	cd hack && docker-compose -p "$(PROJECT)-web-$(USERNAME)" stop 
 rm-web: 
-	cd hack && docker-compose -p "$(PROJECT)-web-$(USER)" rm 
+	cd hack && docker-compose -p "$(PROJECT)-web-$(USERNAME)" rm 
 
-build-thrift:
-	cd hack/dockerfile && \
-	docker build -f ./Dockerfile.Debian.Thrift -t debian-thrift:0.11.0-cpp .
+run-web-ol: rm-web
+	export IDENTIFY_GIT_TAG=$(IDENTIFY_GIT_TAG) && \
+	cd hack && docker-compose -f docker-compose-online.yml -p "$(PROJECT)-web-$(USERNAME)-online" up
+stop-web-ol: 
+	export IDENTIFY_GIT_TAG=$(IDENTIFY_GIT_TAG) && \
+	cd hack && docker-compose -f docker-compose-online.yml -p "$(PROJECT)-web-$(USERNAME)-online" stop 
+rm-web-ol: 
+	export IDENTIFY_GIT_TAG=$(IDENTIFY_GIT_TAG) && \
+	cd hack && docker-compose -f docker-compose-online.yml -p "$(PROJECT)-web-$(USERNAME)-online" rm 
 
-build-centos:
+build-base:
 	cd hack/dockerfile && \
-	docker build -f ./Dockerfile.Centos.Thrift -t centos:thrift . && \
-	docker build -f ./Dockerfile.Centos.Golang -t centos:golang-$(GOVERSION) --build-arg GOV=$(GOVERSION) .
+	docker build -f ./Dockerfile.Debian.Thrift -t $(DEVELOP_PREFIX)identify:thrift-0.11 . && \
+	docker build -f ./Dockerfile.Debian.Golang -t $(DEVELOP_PREFIX)identify:golang-$(GOVERSION) --build-arg GOV=$(GOVERSION) .
 
 init-db:
 	go run ./initial/db.go 
 
-# rpc-thrfit模式调用cpp图像识别服务
+backend-build:
+	docker run -it --rm \
+		-u $(USER):$(GROUP) \
+		-v $(PWD)/release:/tmp/release \
+		-v $(PWD)/backend:/go/src/identify/backend \
+		-w /go/src/identify/backend \
+		golang:$(GOVERSION) \
+		go build -o /tmp/release/backend
+
+tool-build:
+	docker run -it --rm \
+		-u $(USER):$(GROUP) \
+		-v $(PWD)/release:/tmp/release \
+		-v $(PWD)/backend:/go/src/identify/backend \
+		-w /go/src/identify/backend/initial \
+		golang:$(GOVERSION) \
+		go build -o /tmp/release/tool
+
+release: release-backend release-cpp
+	docker push $(IMG_PREFIX)identify-backend:$(IDENTIFY_GIT_TAG) && \
+	docker push $(IMG_PREFIX)identify-cpp:$(IDENTIFY_GIT_TAG)
+
+release-backend: tool-build backend-build
+	docker build -f ./hack/release/Dockerfile.golang -t $(IMG_PREFIX)identify-backend:$(IDENTIFY_GIT_TAG) .
+
+release-cpp: thrift-build
+	docker build -f ./hack/release/Dockerfile.cpp -t $(IMG_PREFIX)identify-cpp:$(IDENTIFY_GIT_TAG) .
+
+# rpc-thrfit-cpp-identify
 CXX = /usr/bin/g++
 
 OPENCV_LIBS = -lopencv_highgui -lopencv_imgcodecs -llibjasper -llibjpeg -llibtiff -llibpng -llibwebp -lopencv_imgproc -lopencv_core  -lpthread -lstdc++ -fopenmp -ldl -lz
@@ -77,5 +114,5 @@ thrift-build:
 		-v $(PWD)/build/lib:$(THRIFT_PREFIX)/lib \
 		-v $(PWD)/build/include:$(THRIFT_PREFIX)/include \
 		-v $(PWD)/build/model:$(THRIFT_PREFIX)/model \
-		thrift:0.11.0-cpp \
+		$(DEVELOP_PREFIX)identify:thrift-0.11 \
 		$(CXX) -o $(THRIFT_PREFIX)/release/server $(THRIFT_FILES) $(DEFINE) $(THRIFT_INCLUDE) $(THRIFT_LIBS)

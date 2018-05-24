@@ -54,7 +54,7 @@ func GetConfig() *Conf {
 	if (Conf{}) == *onceConfig {
 		configPath := os.Getenv("ConfigPath")
 		if configPath == "" {
-			configPath = "../config/.config.yaml"
+			configPath = "./config/.config.yaml"
 		}
 		yamlFile, err := ioutil.ReadFile(configPath)
 		if err != nil {

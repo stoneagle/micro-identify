@@ -1,7 +1,6 @@
 package rpc
 
 import (
-	"fmt"
 	"identify/backend/common"
 	"identify/backend/rpc/image"
 	"net"
@@ -39,7 +38,5 @@ func (rpc *Image) Identify(appId, imgPath string, ptype common.ProjectType) (uni
 	// 根据request获取response
 	resp, _ := client.GetIdentify(context.Background(), r)
 	uniqueId = int(resp.BookID)
-	fmt.Printf("%v\r\n", r)
-	fmt.Printf("%v\r\n", resp)
 	return uniqueId, nil
 }

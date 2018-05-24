@@ -1,0 +1,47 @@
+version: '2'
+services:
+  redis:
+    image: redis:3.2
+    container_name: ${PROJECT_NAME}-${DEV_USER}-redis-online
+    expose:
+      - "6379"
+  mysql:
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+    image: mysql:5.6.38
+    container_name: ${PROJECT_NAME}-${DEV_USER}-mysql-online
+    volumes:
+      - /home/${DEV_USER}/database/mysql:/var/lib/mysql
+    ports:
+      - "${DEV_DB_PORT}:3306"
+    networks:
+      - default
+  thrift:
+    image: ${IMG_PREFIX}identify-cpp:${IDENTIFY_GIT_TAG}
+    container_name: ${PROJECT_NAME}-${DEV_USER}-thrift-online
+    volumes:
+      # 挂载项目代码目录
+      - ../images:/usr/images
+    expose:
+      - "9090"
+    networks:
+      - default
+  backend:
+    image: ${IMG_PREFIX}identify-backend:${IDENTIFY_GIT_TAG}
+    container_name: ${PROJECT_NAME}-${DEV_USER}-golang-online
+    volumes:
+      # 挂载项目代码目录
+      - ../backend/config:/go/src/identify/config
+      - ../images:/go/src/images
+    links:
+      - mysql:mysql.localhost
+    ports:
+      - "${DEV_PORT}:8080"
+    depends_on:
+      - mysql
+    networks:
+      - default
+networks:
+  default:
+    external:
+      name: ${DEV_USER}

@@ -1,0 +1,106 @@
+{
+  "kind": "Deployment",
+  "apiVersion": "extensions/v1beta1",
+  "metadata": {
+    "name": "identify-service",
+    "namespace": "test",
+    "labels": {
+      "app": "identify-service"
+    }
+  },
+  "spec": {
+    "replicas": 1,
+    "selector": {
+      "matchLabels": {
+        "app": "identify-service"
+      }
+    },
+    "template": {
+      "metadata": {
+        "name": "identify-service",
+        "creationTimestamp": null,
+        "labels": {
+          "app": "identify-service"
+        }
+      },
+      "spec": {
+        "volumes": [
+          {
+            "name": "config-file",
+            "configMap": {
+              "name": "identify",
+              "items": [
+                {
+                  "key": ".config.yaml",
+                  "path": ".config.yaml"
+                }
+              ],
+              "defaultMode": 420
+            }
+          },
+          {
+            "name": "share-images",
+            "emptyDir": {}
+          }
+        ],
+        "containers": [
+          {
+            "name": "identify-service",
+            "image": "identify-backend:0.0.2",
+            "resources": {},
+            "volumeMounts": [
+              {
+                "name": "config-file",
+                "mountPath": "/go/src/identify/config"
+              },
+              {
+                "name": "share-images",
+                "mountPath": "/go/src/images"
+              }
+            ],
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent",
+            "securityContext": {
+              "privileged": false
+            }
+          },
+          {
+            "name": "identify-thrift",
+            "image": "identify-cpp:0.0.2",
+            "resources": {},
+            "volumeMounts": [
+              {
+                "name": "share-images",
+                "mountPath": "/usr/images"
+              }
+            ],
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "imagePullPolicy": "IfNotPresent",
+            "securityContext": {
+              "privileged": false
+            }
+          }
+        ],
+        "restartPolicy": "Always",
+        "terminationGracePeriodSeconds": 30,
+        "dnsPolicy": "ClusterFirst",
+        "securityContext": {},
+        "imagePullSecrets": [
+          {
+            "name": "xxx"
+          }
+        ],
+        "schedulerName": "default-scheduler"
+      }
+    },
+    "strategy": {
+      "type": "RollingUpdate",
+      "rollingUpdate": {
+        "maxUnavailable": 1,
+        "maxSurge": 1
+      }
+    }
+  }
+}

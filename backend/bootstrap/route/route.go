@@ -6,7 +6,7 @@ import (
 )
 
 func Configure(b *bootstrap.Bootstrapper) {
-	v1Card := b.App.Group("/v1/card")
+	v1Card := b.App.Group("/identify/card")
 	{
 		cc.NewCard().Router(v1Card)
 		if b.Config.App.Mode == "debug" {
