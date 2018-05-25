@@ -6,7 +6,7 @@ backend/config/.config.yaml
 backend/**/.*.swp
 **/.*.swp
 images/*
-release/
+/release
 
 backend/cplus/model
 backend/cplus/lib

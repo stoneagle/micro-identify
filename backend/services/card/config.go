@@ -26,25 +26,26 @@ func NewConfig(engine *xorm.Engine, cache *redis.Client) *Config {
 }
 
 func (s *Config) GetByCardId(cardId uint) (configs []models.Config, err error) {
-	configsSlice := make([]models.Config, 0)
-	err = s.engine.Join("LEFT", "message", "config.id = message.config_id").Where("config.card_id = ?", cardId).Find(&configsSlice)
+	configsModelSlice := make([]models.ConfigModel, 0)
+	err = s.engine.Sql("select config.*, message.* from config, message where config.id = message.config_id").Where("config.card_id = ?", cardId).Find(&configsModelSlice)
 	if err != nil {
 		return configs, err
 	}
 
 	configsMap := make(map[uint]models.Config)
-	for _, one := range configsSlice {
-		if target, ok := configsMap[one.Id]; !ok {
-			one.Messages = make([]models.Message, 0)
+	for _, one := range configsModelSlice {
+		if target, ok := configsMap[one.Config.Id]; !ok {
+			config := one.Config
+			config.Messages = make([]models.Message, 0)
 			msg := one.Message
 			if msg.Id != 0 {
-				one.Messages = append(one.Messages, msg)
+				config.Messages = append(config.Messages, msg)
 			}
-			configsMap[one.Id] = one
+			configsMap[one.Config.Id] = config
 		} else if one.Message.Id != 0 {
 			msg := one.Message
 			target.Messages = append(target.Messages, msg)
-			configsMap[one.Id] = target
+			configsMap[one.Config.Id] = target
 		}
 	}
 

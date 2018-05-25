@@ -21,16 +21,18 @@ func NewCard(engine *xorm.Engine, cache *redis.Client) *Card {
 }
 
 func (s *Card) GetByUniqueId(uniqueId string) (card models.Card, err error) {
-	cardSlice := make([]models.Card, 0)
-	err = s.engine.Join("LEFT", "album", "album.id = card.album_id").Where("card.unique_id = ?", uniqueId).Find(&cardSlice)
+	cardModelSlice := make([]models.CardModel, 0)
+	err = s.engine.Sql("select card.*, album.* from card, album where card.album_id = album.id").Where("card.unique_id = ?", uniqueId).Find(&cardModelSlice)
 	if err != nil {
 		return card, err
 	}
-	if len(cardSlice) == 0 {
+	if len(cardModelSlice) == 0 {
 		err = errors.New("card data not exist with uniqueId: " + uniqueId)
 		return
 	}
-	return cardSlice[0], nil
+	card = cardModelSlice[0].Card
+	card.Album = cardModelSlice[0].Album
+	return card, nil
 }
 
 func (s *Card) Add(m *models.Card) (err error) {
