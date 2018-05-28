@@ -6,9 +6,8 @@ GROUP := $(shell id -g)
 USERNAME := $(shell id -u -n)
 PROJECT := identify
 GOVERSION = 1.10
-DEVELOP_PREFIX =
-IMG_PREFIX =
-IDENTIFY_GIT_TAG =
+DEVELOP_PREFIX = 
+IDENTIFY_GIT_TAG = 0.0.6
 
 run-web: rm-web-ol 
 	cd hack && docker-compose -p "$(PROJECT)-web-$(USERNAME)" up
@@ -54,14 +53,14 @@ tool-build:
 		go build -o /tmp/release/tool
 
 release: release-backend release-cpp
-	docker push $(IMG_PREFIX)identify-backend:$(IDENTIFY_GIT_TAG) && \
-	docker push $(IMG_PREFIX)identify-cpp:$(IDENTIFY_GIT_TAG)
+	docker push $(DEVELOP_PREFIX)identify-backend:$(IDENTIFY_GIT_TAG) && \
+	docker push $(DEVELOP_PREFIX)identify-cpp:$(IDENTIFY_GIT_TAG)
 
 release-backend: tool-build backend-build
-	docker build -f ./hack/release/Dockerfile.golang -t $(IMG_PREFIX)identify-backend:$(IDENTIFY_GIT_TAG) .
+	docker build -f ./hack/release/Dockerfile.golang -t $(DEVELOP_PREFIX)identify-backend:$(IDENTIFY_GIT_TAG) .
 
 release-cpp: thrift-build
-	docker build -f ./hack/release/Dockerfile.cpp -t $(IMG_PREFIX)identify-cpp:$(IDENTIFY_GIT_TAG) .
+	docker build -f ./hack/release/Dockerfile.cpp -t $(DEVELOP_PREFIX)identify-cpp:$(IDENTIFY_GIT_TAG) .
 
 # rpc-thrfit-cpp-identify
 CXX = /usr/bin/g++
