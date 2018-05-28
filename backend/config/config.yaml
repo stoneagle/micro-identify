@@ -1,5 +1,9 @@
 app:
   mode: debug 
+  supertoken: e6bef4634ea03c27e2ff443d93377043
+service:
+  stoken:
+    url: http://api.storybox-dev.svc.roobo.net
 card:
   redis:
     name: card

@@ -3,8 +3,11 @@ package card
 import (
 	"identify/backend/common"
 	"identify/backend/controllers"
+	middles "identify/backend/middles"
+	models "identify/backend/models/card"
 	"identify/backend/rpc"
 	services "identify/backend/services/card"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,38 +29,47 @@ func NewCard() *Card {
 
 func (c *Card) Router(router *gin.RouterGroup) {
 	cards := router.Group("")
-	cards.POST("check", c.Check)
+	cards.POST("check", middles.RAuthCheck("JSON"), c.Check)
+	cards.POST("", middles.RAuthCheck("POST"), c.PostOne)
+	cards.GET(":source/:clientId/:token/:appId/:uniqueId", middles.RAuthCheck("GET"), c.One)
 	cards.DELETE("cache/release/:albumId", c.DeleteReleaseCache)
 	cards.DELETE("cache/config/:uniqueId", c.DeleteConfigCache)
-	cards.GET(":agentId/:uniqueId", c.One)
 }
 
 /*
  * 返回图片识别结果id
  */
 func (c *Card) Check(ctx *gin.Context) {
-	appId := ctx.PostForm("appId")
+	appId := ctx.Param("appId")
 	img, err := ctx.FormFile("img")
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "img file upload failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "img file upload failed", err)
 		return
 	}
 	filePath := common.GetImagePath(c.Config.Card.Rpc.Img, c.Type) + img.Filename
 	err = ctx.SaveUploadedFile(img, filePath)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorFiles, "img file save failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorFiles, "img file save failed", err)
 		return
 	}
 
 	imgUniqueId, err := c.RpcClient.Identify(appId, filePath, c.Type)
 	if imgUniqueId <= 0 || err != nil {
-		c.ErrorBusiness(ctx, common.ErrorCardIdentify, "img can not identify", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorCardIdentify, "img can not identify", err)
 		return
 	}
-	ret := map[string]int{
+	ret := map[string]interface{}{
 		"UniqueId": imgUniqueId,
 	}
-	c.Success(ctx, ret)
+	detail := ctx.PostForm("detail")
+	if detail != "" {
+		card, successFlag := c.getCardDetail(strconv.Itoa(imgUniqueId), appId, ctx)
+		if !successFlag {
+			return
+		}
+		ret["Card"] = card
+	}
+	common.ResponseSuccess(ctx, ret)
 }
 
 /*
@@ -65,18 +77,34 @@ func (c *Card) Check(ctx *gin.Context) {
  */
 func (c *Card) One(ctx *gin.Context) {
 	uniqueId := ctx.Param("uniqueId")
-	agentId := ctx.Param("agentId")
+	appId := ctx.Param("appId")
+	card, successFlag := c.getCardDetail(uniqueId, appId, ctx)
+	if successFlag {
+		common.ResponseSuccess(ctx, card)
+	}
+}
 
+func (c *Card) PostOne(ctx *gin.Context) {
+	uniqueId := ctx.MustGet("uniqueId").(string)
+	appId := ctx.MustGet("appId").(string)
+	card, successFlag := c.getCardDetail(uniqueId, appId, ctx)
+	if successFlag {
+		common.ResponseSuccess(ctx, card)
+	}
+}
+
+func (c *Card) getCardDetail(uniqueId, appId string, ctx *gin.Context) (card models.Card, flag bool) {
+	flag = false
 	cardSvc := services.NewCard(c.Engine, c.Cache)
 	card, err := cardSvc.GetByUniqueId(uniqueId)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "card get by uniqueId failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "card get by uniqueId failed", err)
 		return
 	}
 
 	// 判断卡片所属专辑是否发布
 	if card.Album.Release == 0 {
-		c.ErrorBusiness(ctx, common.ErrorCardDetail, "album not release yet", nil)
+		common.ResponseErrorBusiness(ctx, common.ErrorCardDetail, "album not release yet", nil)
 		return
 	}
 
@@ -84,14 +112,14 @@ func (c *Card) One(ctx *gin.Context) {
 	releaseSvc := services.NewRelease(c.Engine, c.Cache)
 	agentMap, err := releaseSvc.GetCache(card.AlbumId)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorRedis, "agent lists get from cache failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorRedis, "agent lists get from cache failed", err)
 		return
 	}
 	if len(agentMap) == 0 {
 		agentMap = make(map[string]int)
 		releases, err := releaseSvc.GetByAlbumId(card.AlbumId)
 		if err != nil {
-			c.ErrorBusiness(ctx, common.ErrorMysql, "release get by albumId failed", err)
+			common.ResponseErrorBusiness(ctx, common.ErrorMysql, "release get by albumId failed", err)
 			return
 		}
 		for _, one := range releases {
@@ -99,12 +127,12 @@ func (c *Card) One(ctx *gin.Context) {
 		}
 		err = releaseSvc.SetCache(card.AlbumId, agentMap)
 		if err != nil {
-			c.ErrorBusiness(ctx, common.ErrorRedis, "agent lists set cache failed", err)
+			common.ResponseErrorBusiness(ctx, common.ErrorRedis, "agent lists set cache failed", err)
 			return
 		}
 	}
-	if _, ok := agentMap[agentId]; !ok {
-		c.ErrorBusiness(ctx, common.ErrorCardDetail, "release agent list don't have agentId:"+agentId, nil)
+	if _, ok := agentMap[appId]; !ok {
+		common.ResponseErrorBusiness(ctx, common.ErrorCardDetail, "release agent list don't have appId:"+appId, nil)
 		return
 	}
 
@@ -112,24 +140,23 @@ func (c *Card) One(ctx *gin.Context) {
 	configSvc := services.NewConfig(c.Engine, c.Cache)
 	configs, err := configSvc.GetCache(uniqueId)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorRedis, "configs get from cache failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorRedis, "configs get from cache failed", err)
 		return
 	}
 	if len(configs) == 0 {
 		configs, err = configSvc.GetByCardId(card.Id)
 		if err != nil {
-			c.ErrorBusiness(ctx, common.ErrorMysql, "configs get by card failed", err)
+			common.ResponseErrorBusiness(ctx, common.ErrorMysql, "configs get by card failed", err)
 			return
 		}
 		err = configSvc.SetCache(uniqueId, configs)
 		if err != nil {
-			c.ErrorBusiness(ctx, common.ErrorRedis, "configs set cache failed", err)
+			common.ResponseErrorBusiness(ctx, common.ErrorRedis, "configs set cache failed", err)
 			return
 		}
 	}
 	card.Configs = configs
-
-	c.Success(ctx, card)
+	return card, true
 }
 
 /*
@@ -140,10 +167,10 @@ func (c *Card) DeleteConfigCache(ctx *gin.Context) {
 	configSvc := services.NewConfig(c.Engine, c.Cache)
 	err := configSvc.DelCache(uniqueId)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorRedis, "delete config cache failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorRedis, "delete config cache failed", err)
 		return
 	}
-	c.Success(ctx, struct{}{})
+	common.ResponseSuccess(ctx, struct{}{})
 }
 
 func (c *Card) DeleteReleaseCache(ctx *gin.Context) {
@@ -151,8 +178,8 @@ func (c *Card) DeleteReleaseCache(ctx *gin.Context) {
 	releaseSvc := services.NewRelease(c.Engine, c.Cache)
 	err := releaseSvc.DelCache(albumId)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorRedis, "delete release agent list cache failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorRedis, "delete release agent list cache failed", err)
 		return
 	}
-	c.Success(ctx, struct{}{})
+	common.ResponseSuccess(ctx, struct{}{})
 }

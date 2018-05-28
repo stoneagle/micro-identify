@@ -32,7 +32,13 @@ type DBConf struct {
 
 type Conf struct {
 	App struct {
-		Mode string
+		Mode       string
+		Supertoken string
+	}
+	Service struct {
+		Stoken struct {
+			Url string
+		}
 	}
 	Card struct {
 		Redis    RedisConf

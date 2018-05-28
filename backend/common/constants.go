@@ -8,6 +8,7 @@ const (
 	ErrorFiles  ErrorCode = 2
 	ErrorMysql  ErrorCode = 3
 	ErrorRedis  ErrorCode = 4
+	ErrorAuth   ErrorCode = 5
 	ErrorServer ErrorCode = 500
 
 	ErrorCardIdentify ErrorCode = 1000

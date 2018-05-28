@@ -39,214 +39,214 @@ func (c *Test) AlbumAdd(ctx *gin.Context) {
 	var album models.Album
 	err := ctx.ShouldBindJSON(&album)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "album params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "album params bind failed", err)
 		return
 	}
 
 	svc := services.NewAlbum(c.Engine, c.Cache)
 	err = svc.Add(&album)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "album save failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "album save failed", err)
 		return
 	}
 
-	c.Success(ctx, album)
+	common.ResponseSuccess(ctx, album)
 }
 
 func (c *Test) AlbumDel(ctx *gin.Context) {
 	var album models.Album
 	err := ctx.ShouldBindJSON(&album)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "album params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "album params bind failed", err)
 		return
 	}
 
 	svc := services.NewAlbum(c.Engine, c.Cache)
 	err = svc.Del(&album, true)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "album delete failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "album delete failed", err)
 		return
 	}
 
-	c.Success(ctx, album.Name)
+	common.ResponseSuccess(ctx, album.Name)
 }
 
 func (c *Test) ReleaseAdd(ctx *gin.Context) {
 	var release models.Release
 	err := ctx.ShouldBindJSON(&release)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "release params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "release params bind failed", err)
 		return
 	}
 
 	svc := services.NewRelease(c.Engine, c.Cache)
 	err = svc.Add(&release)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "release save failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "release save failed", err)
 		return
 	}
 
-	c.Success(ctx, release)
+	common.ResponseSuccess(ctx, release)
 }
 
 func (c *Test) ReleaseDel(ctx *gin.Context) {
 	var release models.Release
 	err := ctx.ShouldBindJSON(&release)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "release params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "release params bind failed", err)
 		return
 	}
 
 	svc := services.NewRelease(c.Engine, c.Cache)
 	err = svc.Del(&release, true)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "release delete failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "release delete failed", err)
 		return
 	}
 
-	c.Success(ctx, release.AgentId)
+	common.ResponseSuccess(ctx, release.AgentId)
 }
 
 func (c *Test) CardAdd(ctx *gin.Context) {
 	var card models.Card
 	err := ctx.ShouldBindJSON(&card)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "card params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "card params bind failed", err)
 		return
 	}
 
 	svc := services.NewCard(c.Engine, c.Cache)
 	err = svc.Add(&card)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "card save failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "card save failed", err)
 		return
 	}
 
-	c.Success(ctx, card)
+	common.ResponseSuccess(ctx, card)
 }
 
 func (c *Test) CardDel(ctx *gin.Context) {
 	var card models.Card
 	err := ctx.ShouldBindJSON(&card)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "card params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "card params bind failed", err)
 		return
 	}
 
 	svc := services.NewCard(c.Engine, c.Cache)
 	err = svc.Del(&card, true)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "card delete failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "card delete failed", err)
 		return
 	}
 
-	c.Success(ctx, card.Name)
+	common.ResponseSuccess(ctx, card.Name)
 }
 
 func (c *Test) TagAdd(ctx *gin.Context) {
 	var tag models.Tag
 	err := ctx.ShouldBindJSON(&tag)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "tag params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "tag params bind failed", err)
 		return
 	}
 
 	svc := services.NewTag(c.Engine)
 	err = svc.Add(&tag)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "tag save failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "tag save failed", err)
 		return
 	}
 
-	c.Success(ctx, tag)
+	common.ResponseSuccess(ctx, tag)
 }
 
 func (c *Test) TagDel(ctx *gin.Context) {
 	var tag models.Tag
 	err := ctx.ShouldBindJSON(&tag)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "tag params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "tag params bind failed", err)
 		return
 	}
 
 	svc := services.NewTag(c.Engine)
 	err = svc.Del(&tag, true)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "tag delete failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "tag delete failed", err)
 		return
 	}
 
-	c.Success(ctx, tag.Name)
+	common.ResponseSuccess(ctx, tag.Name)
 }
 
 func (c *Test) ConfigAdd(ctx *gin.Context) {
 	var config models.Config
 	err := ctx.ShouldBindJSON(&config)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "config params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "config params bind failed", err)
 		return
 	}
 
 	svc := services.NewConfig(c.Engine, c.Cache)
 	err = svc.Add(&config)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "config save failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "config save failed", err)
 		return
 	}
 
-	c.Success(ctx, config)
+	common.ResponseSuccess(ctx, config)
 }
 
 func (c *Test) ConfigDel(ctx *gin.Context) {
 	var config models.Config
 	err := ctx.ShouldBindJSON(&config)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "config params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "config params bind failed", err)
 		return
 	}
 
 	svc := services.NewConfig(c.Engine, c.Cache)
 	err = svc.Del(&config, true)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "config delete failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "config delete failed", err)
 		return
 	}
 
-	c.Success(ctx, config.Name)
+	common.ResponseSuccess(ctx, config.Name)
 }
 
 func (c *Test) MessageAdd(ctx *gin.Context) {
 	var message models.Message
 	err := ctx.ShouldBindJSON(&message)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "message params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "message params bind failed", err)
 		return
 	}
 
 	svc := services.NewMessage(c.Engine)
 	err = svc.Add(&message)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "message save failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "message save failed", err)
 		return
 	}
 
-	c.Success(ctx, message)
+	common.ResponseSuccess(ctx, message)
 }
 
 func (c *Test) MessageDel(ctx *gin.Context) {
 	var message models.Message
 	err := ctx.ShouldBindJSON(&message)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorParams, "message params bind failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorParams, "message params bind failed", err)
 		return
 	}
 
 	svc := services.NewMessage(c.Engine)
 	err = svc.Del(&message, true)
 	if err != nil {
-		c.ErrorBusiness(ctx, common.ErrorMysql, "message delete failed", err)
+		common.ResponseErrorBusiness(ctx, common.ErrorMysql, "message delete failed", err)
 		return
 	}
 
-	c.Success(ctx, message.Detail)
+	common.ResponseSuccess(ctx, message.Detail)
 }
