@@ -18,14 +18,9 @@ type params struct {
 	AppId    string `json:"appId" binding:"required"`
 	ClientId string `json:"clientId" binding:"required"`
 	Token    string `json:"token" binding:"required"`
-	Source   string `json:"source" binding:"required"`
 	UniqueId string `json:"uniqueId"`
+	Detail   bool   `json:"detail"`
 }
-
-const (
-	DeviceSource   string = "dev"
-	StoryboxSource string = "rtoy"
-)
 
 func RAuthCheck(method string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -35,7 +30,6 @@ func RAuthCheck(method string) gin.HandlerFunc {
 			authParams.AppId = ctx.Param("appId")
 			authParams.Token = ctx.Param("token")
 			authParams.ClientId = ctx.Param("clientId")
-			authParams.Source = ctx.Param("source")
 		case "POST":
 			err := ctx.ShouldBindJSON(&authParams)
 			if err != nil {
@@ -50,19 +44,14 @@ func RAuthCheck(method string) gin.HandlerFunc {
 				common.ResponseErrorBusiness(ctx, common.ErrorParams, "params get failed", err)
 			}
 			ctx.Set("appId", authParams.AppId)
+			ctx.Set("detail", authParams.Detail)
 		}
 
 		supertoken := common.GetConfig().App.Supertoken
 		if authParams.Token != supertoken {
-			switch authParams.Source {
-			case DeviceSource:
-				err := checkDevAppClient(authParams.AppId, authParams.Token, authParams.ClientId)
-				if err != nil {
-					common.ResponseErrorBusiness(ctx, common.ErrorAuth, "device app and client check failed", err)
-				}
-			case StoryboxSource:
-			default:
-				common.ResponseErrorBusiness(ctx, common.ErrorAuth, "request source matched failed", nil)
+			err := checkDevAppClient(authParams.AppId, authParams.Token, authParams.ClientId)
+			if err != nil {
+				common.ResponseErrorBusiness(ctx, common.ErrorAuth, "device app and client check failed", err)
 			}
 		}
 		return

@@ -22,7 +22,7 @@ func NewCard(engine *xorm.Engine, cache *redis.Client) *Card {
 
 func (s *Card) GetByUniqueId(uniqueId string) (card models.Card, err error) {
 	cardModelSlice := make([]models.CardModel, 0)
-	err = s.engine.Sql("select card.*, album.* from card, album where card.album_id = album.id").Where("card.unique_id = ?", uniqueId).Find(&cardModelSlice)
+	err = s.engine.Sql("select card.*, album.* from card, album where card.album_id = album.id and card.unique_id = ?", uniqueId).Find(&cardModelSlice)
 	if err != nil {
 		return card, err
 	}

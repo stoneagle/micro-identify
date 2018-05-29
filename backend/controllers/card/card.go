@@ -40,7 +40,7 @@ func (c *Card) Router(router *gin.RouterGroup) {
  * 返回图片识别结果id
  */
 func (c *Card) Check(ctx *gin.Context) {
-	appId := ctx.Param("appId")
+	appId := ctx.MustGet("appId").(string)
 	img, err := ctx.FormFile("img")
 	if err != nil {
 		common.ResponseErrorBusiness(ctx, common.ErrorParams, "img file upload failed", err)
@@ -59,16 +59,18 @@ func (c *Card) Check(ctx *gin.Context) {
 		return
 	}
 	ret := map[string]interface{}{
-		"UniqueId": imgUniqueId,
+		"uniqueId": imgUniqueId,
 	}
-	detail := ctx.PostForm("detail")
-	if detail != "" {
+
+	detail := ctx.MustGet("detail").(bool)
+	if detail {
 		card, successFlag := c.getCardDetail(strconv.Itoa(imgUniqueId), appId, ctx)
 		if !successFlag {
 			return
 		}
 		ret["Card"] = card
 	}
+
 	common.ResponseSuccess(ctx, ret)
 }
 
