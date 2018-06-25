@@ -16,7 +16,7 @@ type rres struct {
 
 type params struct {
 	AppId    string `json:"appId" binding:"required"`
-	ClientId string `json:"clientId" binding:"required"`
+	ClientId string `json:"clientId"`
 	Token    string `json:"token" binding:"required"`
 	UniqueId string `json:"uniqueId"`
 	Detail   bool   `json:"detail"`
