@@ -2,12 +2,13 @@
 
 PWD := $(shell pwd)
 USER := $(shell id -u)
+USERNAME := $(shell id -u -n)
 GROUP := $(shell id -g)
 USERNAME := $(shell id -u -n)
 PROJECT := identify
 GOVERSION = 1.10
-DEVELOP_PREFIX = 
-IDENTIFY_GIT_TAG = 0.0.6
+DEVELOP_PREFIX =
+IDENTIFY_GIT_TAG =
 
 run-web: rm-web-ol 
 	cd hack && docker-compose -p "$(PROJECT)-web-$(USERNAME)" up
@@ -32,7 +33,7 @@ build-base:
 	docker build -f ./Dockerfile.Debian.Golang -t $(DEVELOP_PREFIX)identify:golang-$(GOVERSION) --build-arg GOV=$(GOVERSION) .
 
 init-db:
-	go run ./initial/db.go 
+	docker exec -w /go/src/toolkit/backend/initial -it card-$(USERNAME)-golang go run ./init.go 
 
 backend-build:
 	docker run -it --rm \
