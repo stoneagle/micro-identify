@@ -37,6 +37,8 @@ func RAuthCheck(method string) gin.HandlerFunc {
 			}
 			ctx.Set("appId", authParams.AppId)
 			ctx.Set("uniqueId", authParams.UniqueId)
+			requestParams, _ := json.Marshal(authParams)
+			ctx.Set(common.RequestParamsKey, string(requestParams))
 		case "JSON":
 			jsonParams := ctx.PostForm("json")
 			err := json.Unmarshal([]byte(jsonParams), &authParams)
@@ -45,6 +47,7 @@ func RAuthCheck(method string) gin.HandlerFunc {
 			}
 			ctx.Set("appId", authParams.AppId)
 			ctx.Set("detail", authParams.Detail)
+			ctx.Set(common.RequestParamsKey, jsonParams)
 		}
 
 		supertoken := common.GetConfig().App.Supertoken

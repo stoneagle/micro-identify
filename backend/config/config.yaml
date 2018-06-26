@@ -1,6 +1,7 @@
 app:
   mode: debug 
   supertoken: ed01a970cbf2d5c5438e36361c9cb36f1580
+  log: /go/src/identify/backend/logs
 service:
   stoken:
     url: http://api.storybox-dev.svc.roobo.net

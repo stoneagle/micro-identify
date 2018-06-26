@@ -1,5 +1,5 @@
-hash: 8086235a980445c87001a9f921fd2b12907828650a2bf5753c8f937b1d72fdf9
-updated: 2018-05-23T16:23:12.438910357+08:00
+hash: dfca7ac1fecdcc885722fe24af9158fc83c484858adebc3e5d26316bf2648f4a
+updated: 2018-06-26T14:09:05.761378245+08:00
 imports:
 - name: git.apache.org/thrift.git
   version: 327ebb6c2b6df8bf075da02ef45a2a034e9b79ba
@@ -9,13 +9,13 @@ imports:
 - name: github.com/gin-contrib/sse
   version: 22d885f9ecc78bf4ee5d72b937e4bbcdc58e8cae
 - name: github.com/gin-gonic/gin
-  version: bf7803815b0baa22ff7a10457932882dfbf09925
+  version: 1f59bad84b577735b27a1ee855f01ed2f50cd88b
   subpackages:
   - binding
   - json
   - render
 - name: github.com/go-redis/redis
-  version: 877867d2845fbaf86798befe410b6ceb6f5c29a3
+  version: 83fb42932f6145ce52df09860384a4653d2d332a
   subpackages:
   - internal
   - internal/consistenthash
@@ -25,7 +25,7 @@ imports:
   - internal/singleflight
   - internal/util
 - name: github.com/go-sql-driver/mysql
-  version: a0583e0143b1624142adab07e0e97fe106d99561
+  version: d523deb1b23d913de5bdada721a6071e71283618
 - name: github.com/go-xorm/builder
   version: bad0a612f0d6277b953910822ab5dfb30dd18237
 - name: github.com/go-xorm/core
@@ -33,11 +33,11 @@ imports:
 - name: github.com/go-xorm/xorm
   version: d85bb4911c725a53b135fc12862748a41b6c07da
 - name: github.com/golang/protobuf
-  version: 3a3da3a4e26776cc22a79ef46d5d58477532dede
+  version: 9eb2c01ac278a5d89ce4b2be68fe4500955d8179
   subpackages:
   - proto
 - name: github.com/json-iterator/go
-  version: 2ddf6d758266fcb080a4f9e054b9f292c85e6798
+  version: f2b4162afba35581b6d4a50d3b8f34e33c144682
 - name: github.com/mattn/go-isatty
   version: 6ca4dbf54d38eea1a992b3c722a76a5d1c4cb25c
 - name: github.com/modern-go/concurrent
@@ -48,20 +48,35 @@ imports:
   version: f3cacc17c85ecb7f1b6a9e373ee85d1480919868
   subpackages:
   - codec
+- name: go.uber.org/atomic
+  version: 1ea20fb1cbb1cc08cbd0d913a96dead89aa18289
+- name: go.uber.org/multierr
+  version: 3c4937480c32f4c13a875a1829af76c98ca3d40a
 - name: go.uber.org/zap
   version: eeedf312bc6c57391d84767a4cd413f02a917974
   subpackages:
   - atomic
+  - buffer
+  - internal/bufferpool
+  - internal/color
+  - internal/exit
+  - zapcore
 - name: golang.org/x/net
-  version: 9ef9f5bb98a1fdc41f8cf6c250a4404b4085e389
+  version: afe8f62b1d6bbd81f31868121a50b06d8188e1f9
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: 88eb85aaee56831ad49eaf7aa80d73de9814cde2
+  version: a200a19cb90b19de298170992778b1fda7217bd6
   subpackages:
   - unix
+- name: google.golang.org/appengine
+  version: b1f26356af11148e710935ed1ac8a7f5702c7612
+  subpackages:
+  - cloudsql
 - name: gopkg.in/go-playground/validator.v8
   version: 5f1438d3fca68893a817e4a66806cea46a9e4ebf
+- name: gopkg.in/natefinch/lumberjack.v2
+  version: a96e63847dc3c67d17befa69c303767e2f84e54f
 - name: gopkg.in/yaml.v2
   version: 5420a8b6744d3b0345ab293f6fcba19c978f1183
 testImports: []

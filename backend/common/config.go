@@ -34,6 +34,7 @@ type Conf struct {
 	App struct {
 		Mode       string
 		Supertoken string
+		Log        string
 	}
 	Service struct {
 		Stoken struct {

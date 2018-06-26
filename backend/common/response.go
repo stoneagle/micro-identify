@@ -1,40 +1,64 @@
 package common
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+var (
+	RequestParamsKey = "requestParams"
+)
+
+type Response struct {
+	Result ErrorCode   `json:"result"`
+	Data   interface{} `json:"data"`
+	Msg    string      `json:"msg"`
+}
 
 func Redirect(ctx *gin.Context, uri string) {
 	ctx.Redirect(http.StatusFound, uri)
 }
 
 func ResponseSuccess(ctx *gin.Context, data interface{}) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"result": ErrorOk,
-		"data":   data,
-		"msg":    "success",
-	})
+	response := Response{
+		Result: ErrorOk,
+		Data:   data,
+		Msg:    "success",
+	}
+	ctx.JSON(http.StatusOK, response)
+	FormatResponseLog(ctx, response)
 }
 
 func ResponseErrorBusiness(ctx *gin.Context, code ErrorCode, desc string, err error) {
 	if err != nil {
 		desc += ":" + err.Error()
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"result": code,
-		"data":   struct{}{},
-		"msg":    desc,
-	})
+	response := Response{
+		Result: code,
+		Data:   struct{}{},
+		Msg:    desc,
+	}
+	ctx.JSON(http.StatusOK, response)
 	ctx.Abort()
+	FormatResponseLog(ctx, response)
 }
 
 func ResponseErrorServer(ctx *gin.Context, desc string) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"result": ErrorServer,
-		"data":   struct{}{},
-		"msg":    desc,
-	})
+	response := Response{
+		Result: ErrorServer,
+		Data:   struct{}{},
+		Msg:    desc,
+	}
+	ctx.JSON(http.StatusOK, response)
 	ctx.Abort()
+	FormatResponseLog(ctx, response)
+}
+
+func FormatResponseLog(ctx *gin.Context, response Response) {
+	logRequest := ctx.MustGet(RequestParamsKey).(string)
+	logResponse, _ := json.Marshal(response)
+	GetLogger().Infow("request:【" + logRequest + "】")
+	GetLogger().Infow("response:【" + string(logResponse) + "】")
 }

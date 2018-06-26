@@ -4,6 +4,7 @@ backend/backend
 backend/cplus/ipc.o
 backend/config/.config.yaml
 backend/**/.*.swp
+backend/logs/*.log
 **/.*.swp
 images/*
 /release
