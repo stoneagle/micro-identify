@@ -61,7 +61,7 @@ func (c *Card) Check(ctx *gin.Context) {
 		return
 	}
 	ret := map[string]interface{}{
-		"uniqueId": imgUniqueId,
+		"uniqueId": strconv.Itoa(imgUniqueId),
 	}
 
 	detail := ctx.MustGet("detail").(bool)
