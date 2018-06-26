@@ -7,6 +7,7 @@ import (
 	models "identify/backend/models/card"
 	"identify/backend/rpc"
 	services "identify/backend/services/card"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -69,8 +70,16 @@ func (c *Card) Check(ctx *gin.Context) {
 		if !successFlag {
 			return
 		}
+
 		cardServiceFormat := formatCardService(card)
 		ret["Card"] = cardServiceFormat
+	}
+
+	// 处理完毕删除文件
+	err = os.Remove(filePath)
+	if err != nil {
+		common.ResponseErrorBusiness(ctx, common.ErrorFiles, "img file delete failed", err)
+		return
 	}
 
 	common.ResponseSuccess(ctx, ret)
