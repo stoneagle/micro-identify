@@ -24,7 +24,7 @@ func main() {
 		panic(err)
 	}
 	cardConfig := config.Card.Database
-	initCard(cardConfig)
+	initCard(cardConfig, config.App.Mode)
 }
 
 func initCard(dbConfig common.DBConf, mode string) {
