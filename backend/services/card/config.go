@@ -27,7 +27,7 @@ func NewConfig(engine *xorm.Engine, cache *redis.Client) *Config {
 
 func (s *Config) GetByCardId(cardId uint) (configs []models.Config, err error) {
 	configsModelSlice := make([]models.ConfigModel, 0)
-	err = s.engine.Sql("select config.*, message.* from config, message where config.id = message.config_id and config.card_id = ?", cardId).Find(&configsModelSlice)
+	err = s.engine.Sql("select config.*, message.* from config, message where config.id = message.config_id and config.card_id = ?  ORDER BY message.config_id, message.order ASC", cardId).Find(&configsModelSlice)
 	if err != nil {
 		return configs, err
 	}

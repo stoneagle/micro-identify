@@ -33,8 +33,8 @@ func (c *Card) Router(router *gin.RouterGroup) {
 	cards.POST("detail", middles.RAuthCheck("POST"), c.PostOne)
 	cards.POST("", middles.RAuthCheck("POST"), c.PostOneSlime)
 	cards.GET(":source/:clientId/:token/:appId/:uniqueId", middles.RAuthCheck("GET"), c.One)
-	cards.DELETE("cache/release/:albumId", c.DeleteReleaseCache)
-	cards.DELETE("cache/config/:uniqueId", c.DeleteConfigCache)
+	cards.DELETE("cache/release/:albumId", middles.RAuthCheck("DELETE"), c.DeleteReleaseCache)
+	cards.DELETE("cache/config/:uniqueId", middles.RAuthCheck("DELETE"), c.DeleteConfigCache)
 }
 
 /*
@@ -115,7 +115,7 @@ func formatCardService(card models.Card) models.CardServiceModel {
 		AlbumName:   card.Album.Name,
 		AlbumSource: card.Album.Source,
 	}
-	cardServiceFormat.Messages = make([][]models.MessageServiceModel, 0)
+	cardServiceFormat.Resources = make([][]models.MessageServiceModel, 0)
 	for _, config := range card.Configs {
 		messageServiceFormtSlice := make([]models.MessageServiceModel, 0)
 		for _, message := range config.Messages {
@@ -126,7 +126,7 @@ func formatCardService(card models.Card) models.CardServiceModel {
 			messageServiceFormtSlice = append(messageServiceFormtSlice, messageServiceFormat)
 		}
 		if len(messageServiceFormtSlice) > 0 {
-			cardServiceFormat.Messages = append(cardServiceFormat.Messages, messageServiceFormtSlice)
+			cardServiceFormat.Resources = append(cardServiceFormat.Resources, messageServiceFormtSlice)
 		}
 	}
 	return cardServiceFormat

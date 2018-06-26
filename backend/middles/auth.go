@@ -26,10 +26,15 @@ func RAuthCheck(method string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var authParams params
 		switch method {
+		case "DELETE":
+			ctx.Set(common.RequestParamsKey, "")
+			return
 		case "GET":
 			authParams.AppId = ctx.Param("appId")
 			authParams.Token = ctx.Param("token")
 			authParams.ClientId = ctx.Param("clientId")
+			requestParams, _ := json.Marshal(authParams)
+			ctx.Set(common.RequestParamsKey, string(requestParams))
 		case "POST":
 			err := ctx.ShouldBindJSON(&authParams)
 			if err != nil {

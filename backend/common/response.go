@@ -59,6 +59,10 @@ func ResponseErrorServer(ctx *gin.Context, desc string) {
 func FormatResponseLog(ctx *gin.Context, response Response) {
 	logRequest := ctx.MustGet(RequestParamsKey).(string)
 	logResponse, _ := json.Marshal(response)
-	GetLogger().Infow("request:【" + logRequest + "】")
-	GetLogger().Infow("response:【" + string(logResponse) + "】")
+	if logRequest != "" {
+		GetLogger().Infow("request:【" + logRequest + "】")
+	}
+	if string(logResponse) != "" {
+		GetLogger().Infow("response:【" + string(logResponse) + "】")
+	}
 }

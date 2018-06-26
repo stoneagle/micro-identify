@@ -18,7 +18,7 @@ type CardServiceModel struct {
 	Name        string                  `json:"name"`
 	AlbumName   string                  `json:"albumName"`
 	AlbumSource string                  `json:"albumSource"`
-	Messages    [][]MessageServiceModel `json:"messages"`
+	Resources   [][]MessageServiceModel `json:"resources"`
 }
 
 type CardModel struct {
