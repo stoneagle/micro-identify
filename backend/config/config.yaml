@@ -1,6 +1,6 @@
 app:
   mode: debug 
-  supertoken: e6bef4634ea03c27e2ff443d93377043
+  supertoken: ed01a970cbf2d5c5438e36361c9cb36f1580
 service:
   stoken:
     url: http://api.storybox-dev.svc.roobo.net

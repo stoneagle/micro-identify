@@ -30,7 +30,8 @@ func NewCard() *Card {
 func (c *Card) Router(router *gin.RouterGroup) {
 	cards := router.Group("")
 	cards.POST("check", middles.RAuthCheck("JSON"), c.Check)
-	cards.POST("", middles.RAuthCheck("POST"), c.PostOne)
+	cards.POST("detail", middles.RAuthCheck("POST"), c.PostOne)
+	cards.POST("", middles.RAuthCheck("POST"), c.PostOneSlime)
 	cards.GET(":source/:clientId/:token/:appId/:uniqueId", middles.RAuthCheck("GET"), c.One)
 	cards.DELETE("cache/release/:albumId", c.DeleteReleaseCache)
 	cards.DELETE("cache/config/:uniqueId", c.DeleteConfigCache)
@@ -68,7 +69,8 @@ func (c *Card) Check(ctx *gin.Context) {
 		if !successFlag {
 			return
 		}
-		ret["Card"] = card
+		cardServiceFormat := formatCardService(card)
+		ret["Card"] = cardServiceFormat
 	}
 
 	common.ResponseSuccess(ctx, ret)
@@ -93,6 +95,41 @@ func (c *Card) PostOne(ctx *gin.Context) {
 	if successFlag {
 		common.ResponseSuccess(ctx, card)
 	}
+}
+
+func (c *Card) PostOneSlime(ctx *gin.Context) {
+	uniqueId := ctx.MustGet("uniqueId").(string)
+	appId := ctx.MustGet("appId").(string)
+	card, successFlag := c.getCardDetail(uniqueId, appId, ctx)
+	if successFlag {
+		cardServiceFormat := formatCardService(card)
+		common.ResponseSuccess(ctx, cardServiceFormat)
+	}
+}
+
+func formatCardService(card models.Card) models.CardServiceModel {
+	cardServiceFormat := models.CardServiceModel{
+		Id:          card.Id,
+		UniqueId:    card.UniqueId,
+		Name:        card.Name,
+		AlbumName:   card.Album.Name,
+		AlbumSource: card.Album.Source,
+	}
+	cardServiceFormat.Messages = make([][]models.MessageServiceModel, 0)
+	for _, config := range card.Configs {
+		messageServiceFormtSlice := make([]models.MessageServiceModel, 0)
+		for _, message := range config.Messages {
+			messageServiceFormat := models.MessageServiceModel{
+				Type:   message.Type,
+				Detail: message.Detail,
+			}
+			messageServiceFormtSlice = append(messageServiceFormtSlice, messageServiceFormat)
+		}
+		if len(messageServiceFormtSlice) > 0 {
+			cardServiceFormat.Messages = append(cardServiceFormat.Messages, messageServiceFormtSlice)
+		}
+	}
+	return cardServiceFormat
 }
 
 func (c *Card) getCardDetail(uniqueId, appId string, ctx *gin.Context) (card models.Card, flag bool) {

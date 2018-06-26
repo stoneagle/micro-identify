@@ -12,6 +12,15 @@ type Card struct {
 	Album              Album    `xorm:"-"`
 }
 
+type CardServiceModel struct {
+	Id          uint                    `json:"id"`
+	UniqueId    string                  `json:"uniqueId"`
+	Name        string                  `json:"name"`
+	AlbumName   string                  `json:"albumName"`
+	AlbumSource string                  `json:"albumSource"`
+	Messages    [][]MessageServiceModel `json:"messages"`
+}
+
 type CardModel struct {
 	Card  Card  `xorm:"extends"`
 	Album Album `xorm:"extends"`

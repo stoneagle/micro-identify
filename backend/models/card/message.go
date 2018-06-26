@@ -8,6 +8,11 @@ type Message struct {
 	Detail   string `xorm:"TEXT comment('描述内容')" form:"detail" json:"detail"`
 }
 
+type MessageServiceModel struct {
+	Type   int    `json:"type"`
+	Detail string `json:"detail"`
+}
+
 func (m Message) TableName() string {
 	return "message"
 }
