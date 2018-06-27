@@ -243,7 +243,7 @@ func (p *Request) String() string {
 //  - BookID
 //  - State
 type Response struct {
-  BookID int32 `thrift:"bookID,1" db:"bookID" json:"bookID"`
+  BookID string `thrift:"bookID,1" db:"bookID" json:"bookID"`
   State ResponseState `thrift:"state,2" db:"state" json:"state"`
 }
 
@@ -252,7 +252,7 @@ func NewResponse() *Response {
 }
 
 
-func (p *Response) GetBookID() int32 {
+func (p *Response) GetBookID() string {
   return p.BookID
 }
 
@@ -273,7 +273,7 @@ func (p *Response) Read(iprot thrift.TProtocol) error {
     if fieldTypeId == thrift.STOP { break; }
     switch fieldId {
     case 1:
-      if fieldTypeId == thrift.I32 {
+      if fieldTypeId == thrift.STRING {
         if err := p.ReadField1(iprot); err != nil {
           return err
         }
@@ -308,7 +308,7 @@ func (p *Response) Read(iprot thrift.TProtocol) error {
 }
 
 func (p *Response)  ReadField1(iprot thrift.TProtocol) error {
-  if v, err := iprot.ReadI32(); err != nil {
+  if v, err := iprot.ReadString(); err != nil {
   return thrift.PrependError("error reading field 1: ", err)
 } else {
   p.BookID = v
@@ -341,9 +341,9 @@ func (p *Response) Write(oprot thrift.TProtocol) error {
 }
 
 func (p *Response) writeField1(oprot thrift.TProtocol) (err error) {
-  if err := oprot.WriteFieldBegin("bookID", thrift.I32, 1); err != nil {
+  if err := oprot.WriteFieldBegin("bookID", thrift.STRING, 1); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field begin error 1:bookID: ", p), err) }
-  if err := oprot.WriteI32(int32(p.BookID)); err != nil {
+  if err := oprot.WriteString(string(p.BookID)); err != nil {
   return thrift.PrependError(fmt.Sprintf("%T.bookID (1) field write error: ", p), err) }
   if err := oprot.WriteFieldEnd(); err != nil {
     return thrift.PrependError(fmt.Sprintf("%T write field end error 1:bookID: ", p), err) }

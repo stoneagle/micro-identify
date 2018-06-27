@@ -14,7 +14,7 @@ type Image struct {
 	Port string
 }
 
-func (rpc *Image) Identify(appId, imgPath string, ptype common.ProjectType) (uniqueId int, err error) {
+func (rpc *Image) Identify(appId, imgPath string, ptype common.ProjectType) (uniqueId string, err error) {
 	// 定义协议
 	transportFactory := thrift.NewTTransportFactory()
 	protocolFactory := thrift.NewTBinaryProtocolFactoryDefault()
@@ -37,6 +37,6 @@ func (rpc *Image) Identify(appId, imgPath string, ptype common.ProjectType) (uni
 	}
 	// 根据request获取response
 	resp, _ := client.GetIdentify(context.Background(), r)
-	uniqueId = int(resp.BookID)
+	uniqueId = resp.BookID
 	return uniqueId, nil
 }

@@ -42,7 +42,7 @@ class ImageServiceHandler : virtual public ImageServiceIf {
   void getIdentify(Response& _return, const Request& request) {
     cv::Mat img = cv::imread(request.imgPath, -1);
     if (img.empty()) {
-        _return.bookID = 0;
+        _return.bookID = "";
         _return.state = ResponseState::StateError;
     } else {
         int modelid = 1;
@@ -53,7 +53,7 @@ class ImageServiceHandler : virtual public ImageServiceIf {
         ti.threadID = 1;
         stru_predrst prediction;
         prediction = ti.objBR->readcover_fixedsize(*(ti.ptr_img));
-        _return.bookID = prediction.bookid;
+        _return.bookID = prediction.name;
         _return.state = ResponseState::StateOk;
     }
   }

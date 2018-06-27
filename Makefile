@@ -94,7 +94,7 @@ thrift-init-golang:
 		-u $(USER):$(GROUP) \
 		-v $(PWD)/backend:$(THRIFT_PREFIX)/backend \
 		-v $(PWD)/hack:$(THRIFT_PREFIX)/hack \
-		thrift:0.11.0-cpp \
+		$(DEVELOP_PREFIX)identify:thrift-0.11 \
 		thrift --gen go -out $(THRIFT_PREFIX)/backend/rpc $(THRIFT_PREFIX)/hack/image.thrift
 
 thrift-init-cpp:
@@ -103,7 +103,7 @@ thrift-init-cpp:
 		-u $(USER):$(GROUP) \
 		-v $(PWD)/thrift:$(THRIFT_PREFIX)/thrift \
 		-v $(PWD)/hack:$(THRIFT_PREFIX)/hack \
-		thrift:0.11.0-cpp \
+		$(DEVELOP_PREFIX)identify:thrift-0.11 \
 		thrift --gen cpp -out $(THRIFT_PREFIX)/thrift/service $(THRIFT_PREFIX)/hack/image.thrift
 
 thrift-build:

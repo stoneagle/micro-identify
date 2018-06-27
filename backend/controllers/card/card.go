@@ -8,7 +8,6 @@ import (
 	"identify/backend/rpc"
 	services "identify/backend/services/card"
 	"os"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -56,17 +55,17 @@ func (c *Card) Check(ctx *gin.Context) {
 	}
 
 	imgUniqueId, err := c.RpcClient.Identify(appId, filePath, c.Type)
-	if imgUniqueId <= 0 || err != nil {
+	if err != nil {
 		common.ResponseErrorBusiness(ctx, common.ErrorCardIdentify, "img can not identify", err)
 		return
 	}
 	ret := map[string]interface{}{
-		"uniqueId": strconv.Itoa(imgUniqueId),
+		"uniqueId": imgUniqueId,
 	}
 
 	detail := ctx.MustGet("detail").(bool)
 	if detail {
-		card, successFlag := c.getCardDetail(strconv.Itoa(imgUniqueId), appId, ctx)
+		card, successFlag := c.getCardDetail(imgUniqueId, appId, ctx)
 		if !successFlag {
 			return
 		}

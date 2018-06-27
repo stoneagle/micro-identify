@@ -172,7 +172,7 @@ Response::~Response() throw() {
 }
 
 
-void Response::__set_bookID(const int32_t val) {
+void Response::__set_bookID(const std::string& val) {
   this->bookID = val;
 }
 
@@ -208,8 +208,8 @@ uint32_t Response::read(::apache::thrift::protocol::TProtocol* iprot) {
     switch (fid)
     {
       case 1:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->bookID);
+        if (ftype == ::apache::thrift::protocol::T_STRING) {
+          xfer += iprot->readString(this->bookID);
           this->__isset.bookID = true;
         } else {
           xfer += iprot->skip(ftype);
@@ -242,8 +242,8 @@ uint32_t Response::write(::apache::thrift::protocol::TProtocol* oprot) const {
   ::apache::thrift::protocol::TOutputRecursionTracker tracker(*oprot);
   xfer += oprot->writeStructBegin("Response");
 
-  xfer += oprot->writeFieldBegin("bookID", ::apache::thrift::protocol::T_I32, 1);
-  xfer += oprot->writeI32(this->bookID);
+  xfer += oprot->writeFieldBegin("bookID", ::apache::thrift::protocol::T_STRING, 1);
+  xfer += oprot->writeString(this->bookID);
   xfer += oprot->writeFieldEnd();
 
   xfer += oprot->writeFieldBegin("state", ::apache::thrift::protocol::T_I32, 2);

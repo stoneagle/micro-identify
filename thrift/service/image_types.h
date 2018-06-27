@@ -101,16 +101,16 @@ class Response : public virtual ::apache::thrift::TBase {
 
   Response(const Response&);
   Response& operator=(const Response&);
-  Response() : bookID(0), state((ResponseState::type)0) {
+  Response() : bookID(""), state((ResponseState::type)0) {
   }
 
   virtual ~Response() throw();
-  int32_t bookID;
+  std::string bookID;
   ResponseState::type state;
 
   _Response__isset __isset;
 
-  void __set_bookID(const int32_t val);
+  void __set_bookID(const std::string& val);
 
   void __set_state(const ResponseState::type val);
 

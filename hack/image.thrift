@@ -14,7 +14,7 @@ struct Request {
 }
 
 struct Response {
-    1: i32 bookID = 0,
+    1: string bookID = "",
     2: ResponseState state
 }
 
