@@ -42,7 +42,7 @@ class ImageServiceHandler : virtual public ImageServiceIf {
   void getIdentify(Response& _return, const Request& request) {
     cv::Mat img = cv::imread(request.imgPath, -1);
     if (img.empty()) {
-        _return.bookID = "";
+        _return.bookID = "NoneImg";
         _return.state = ResponseState::StateError;
     } else {
         int modelid = 1;

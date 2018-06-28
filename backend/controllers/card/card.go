@@ -56,6 +56,14 @@ func (c *Card) Check(ctx *gin.Context) {
 		common.ResponseErrorBusiness(ctx, common.ErrorCardIdentify, "img can not identify", err)
 		return
 	}
+	switch imgUniqueId {
+	case "NoneImg":
+		common.ResponseErrorBusiness(ctx, common.ErrorCardIdentify, "img not exist in relate path", nil)
+		return
+	case "None":
+		common.ResponseErrorBusiness(ctx, common.ErrorCardIdentify, "img not exist in identify library", nil)
+		return
+	}
 	ret := map[string]interface{}{
 		"uniqueId": imgUniqueId,
 	}

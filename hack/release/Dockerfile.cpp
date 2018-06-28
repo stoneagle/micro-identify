@@ -1,4 +1,4 @@
-FROM identify:thrift-0.11 
+FROM registry.cn-beijing.aliyuncs.com/roobodev/identify:thrift-0.11 
 
 COPY ./release/server /usr/src/server
 COPY ./build/model /usr/src/model
