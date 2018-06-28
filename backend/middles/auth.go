@@ -4,8 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"identify/backend/common"
+	"io/ioutil"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+)
+
+var (
+	fileLimit int64 = 3 * 1024 * 1024
 )
 
 type rres struct {
@@ -44,15 +50,6 @@ func RAuthCheck(method string) gin.HandlerFunc {
 			ctx.Set("uniqueId", authParams.UniqueId)
 			requestParams, _ := json.Marshal(authParams)
 			ctx.Set(common.RequestParamsKey, string(requestParams))
-		case "JSON":
-			jsonParams := ctx.PostForm("json")
-			err := json.Unmarshal([]byte(jsonParams), &authParams)
-			if err != nil {
-				common.ResponseErrorBusiness(ctx, common.ErrorParams, "params get failed", err)
-			}
-			ctx.Set("appId", authParams.AppId)
-			ctx.Set("detail", authParams.Detail)
-			ctx.Set(common.RequestParamsKey, jsonParams)
 		}
 
 		supertoken := common.GetConfig().App.Supertoken
@@ -62,7 +59,44 @@ func RAuthCheck(method string) gin.HandlerFunc {
 				common.ResponseErrorBusiness(ctx, common.ErrorAuth, "device app and client check failed", err)
 			}
 		}
-		return
+	}
+}
+
+func RAuthCheckWithFile(file string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var authParams params
+		jsonParams := ctx.PostForm("json")
+		err := json.Unmarshal([]byte(jsonParams), &authParams)
+		if err != nil {
+			common.ResponseErrorBusiness(ctx, common.ErrorParams, "params get failed", err)
+		}
+		ctx.Set("appId", authParams.AppId)
+		ctx.Set("detail", authParams.Detail)
+		ctx.Set(common.RequestParamsKey, jsonParams)
+
+		imgFile, img, err := ctx.Request.FormFile(file)
+		if err != nil {
+			common.ResponseErrorBusiness(ctx, common.ErrorFiles, "img file upload failed", err)
+		}
+		content, err := ioutil.ReadAll(imgFile)
+		if err != nil {
+			common.ResponseErrorBusiness(ctx, common.ErrorFiles, "img file load failed", err)
+		}
+		fileSize := int64(len(content))
+		if fileSize > fileLimit {
+			fileLimitStr := strconv.FormatInt(fileLimit, 10)
+			fileSizeStr := strconv.FormatInt(fileSize, 10)
+			common.ResponseErrorBusiness(ctx, common.ErrorFiles, "img file size exceed:"+fileSizeStr+">"+fileLimitStr, nil)
+		}
+		ctx.Set(file, img)
+
+		supertoken := common.GetConfig().App.Supertoken
+		if authParams.Token != supertoken {
+			err := checkDevAppClient(authParams.AppId, authParams.Token, authParams.ClientId)
+			if err != nil {
+				common.ResponseErrorBusiness(ctx, common.ErrorAuth, "device app and client check failed", err)
+			}
+		}
 	}
 }
 

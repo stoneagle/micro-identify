@@ -12,6 +12,15 @@ type Card struct {
 	Album              Album    `xorm:"-"`
 }
 
+type CardStatus int
+
+const (
+	CardStatusNoEdit    CardStatus = 0
+	CardStatusEdited    CardStatus = 1
+	CardStatusNoRelease CardStatus = 2
+	CardStatusReleased  CardStatus = 3
+)
+
 type CardServiceModel struct {
 	Id          uint                    `json:"id"`
 	UniqueId    string                  `json:"uniqueId"`

@@ -7,6 +7,7 @@ import (
 	models "identify/backend/models/card"
 	"identify/backend/rpc"
 	services "identify/backend/services/card"
+	"mime/multipart"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -29,7 +30,7 @@ func NewCard() *Card {
 
 func (c *Card) Router(router *gin.RouterGroup) {
 	cards := router.Group("")
-	cards.POST("check", middles.RAuthCheck("JSON"), c.Check)
+	cards.POST("check", middles.RAuthCheckWithFile("img"), c.Check)
 	cards.POST("detail", middles.RAuthCheck("POST"), c.PostOne)
 	cards.POST("", middles.RAuthCheck("POST"), c.PostOneSlime)
 	cards.GET(":source/:clientId/:token/:appId/:uniqueId", middles.RAuthCheck("GET"), c.One)
@@ -42,13 +43,9 @@ func (c *Card) Router(router *gin.RouterGroup) {
  */
 func (c *Card) Check(ctx *gin.Context) {
 	appId := ctx.MustGet("appId").(string)
-	img, err := ctx.FormFile("img")
-	if err != nil {
-		common.ResponseErrorBusiness(ctx, common.ErrorParams, "img file upload failed", err)
-		return
-	}
+	img := ctx.MustGet("img").(*multipart.FileHeader)
 	filePath := common.GetImagePath(c.Config.Card.Rpc.Img, c.Type) + img.Filename
-	err = ctx.SaveUploadedFile(img, filePath)
+	err := ctx.SaveUploadedFile(img, filePath)
 	if err != nil {
 		common.ResponseErrorBusiness(ctx, common.ErrorFiles, "img file save failed", err)
 		return
@@ -67,6 +64,10 @@ func (c *Card) Check(ctx *gin.Context) {
 	if detail {
 		card, successFlag := c.getCardDetail(imgUniqueId, appId, ctx)
 		if !successFlag {
+			return
+		}
+		if card.Status != int(models.CardStatusReleased) {
+			common.ResponseErrorBusiness(ctx, common.ErrorCardIdentify, "card not released yet", nil)
 			return
 		}
 
@@ -110,6 +111,10 @@ func (c *Card) PostOneSlime(ctx *gin.Context) {
 	appId := ctx.MustGet("appId").(string)
 	card, successFlag := c.getCardDetail(uniqueId, appId, ctx)
 	if successFlag {
+		if card.Status != int(models.CardStatusReleased) {
+			common.ResponseErrorBusiness(ctx, common.ErrorCardIdentify, "card not released yet", nil)
+			return
+		}
 		cardServiceFormat := formatCardService(card)
 		common.ResponseSuccess(ctx, cardServiceFormat)
 	}
